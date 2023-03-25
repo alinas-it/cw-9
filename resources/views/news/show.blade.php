@@ -8,6 +8,11 @@
                     <h1 class="card-title"> {{ $article->title }} </h1>
                     <div class="text-muted mb-2">Опубликовано {{ $article->published_at }}</div>
                     <div class="text-muted mb-2">Создано {{ $article->created_at }}</div>
+                    <div class="text-muted mb-2">Автор:
+                        <a href="{{ route('profile.show', ['user' => $article->user]) }}">
+                            {{ $article->user->name }}
+                        </a>
+                    </div>
                     <p class="card-text">
                         {{ $article->body }}
                     </p>
@@ -49,6 +54,30 @@
                 </div>
             </div>
 
+            @if(!$article->published_at && Auth::user()->can('publish-news'))
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h3 class="card-title mb-4">Публикация</h3>
+                        <form method="POST" action="{{ route('news.publish', compact('article')) }}">
+                            @csrf
+                            <div class="row mb-4">
+                                <label for="inputEmail3" class="col-sm-2 col-form-label">Дата</label>
+                                <div class="col-sm-10">
+                                    <input type="date" class="form-control @error('published_at') is-invalid @enderror"
+                                           id="published_at" name="published_at" value="{{ old('published_at') }}">
+                                    @error ('published_at')
+                                        <div class="invalid-feedback">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Опубликовать</button>
+                        </form>
+                    </div>
+                </div>
+            @endif
+
             <div class="card mb-4">
                 <div class="card-body">
                     <h3 class="card-title mb-4">Комментарии</h3>
@@ -56,7 +85,15 @@
                         @foreach($article->comments as $comment)
                         <li class="media mb-3">
                             <div class="media-body">
-                                <h5 class="mt-0 mb-1">{{ $comment->user->name }}</h5>
+                                <div class="d-flex justify-content-between">
+                                    <h5 class="mt-0 mb-1">{{ $comment->user->name }}</h5>
+                                    @if(!$comment->is_approved)
+                                        <form method="POST" action="{{ route('comments.publish', compact('comment')) }}" class="mb-2">
+                                            @csrf
+                                            <button type="submit" class="btn btn-secondary btn-sm">Опубликовать</button>
+                                        </form>
+                                    @endif
+                                </div>
                                 {{ $comment->body }}
                             </div>
                         </li>
