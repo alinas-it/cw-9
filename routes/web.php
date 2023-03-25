@@ -22,14 +22,14 @@ use Illuminate\Support\Facades\Route;
 
 Auth::routes();
 
-Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('news/create', [NewsController::class, 'create'])->name('news.create');
-Route::get('news/{article}', [NewsController::class, 'show'])->name('news.show');
-Route::post('news/store', [NewsController::class, 'store'])->name('news.store');
-Route::post('news/{article}/publish', [NewsController::class, 'publish'])->name('news.publish');
-Route::post('{article}/comments/store', [CommentsController::class, 'store'])->name('comments.store');
-Route::post('comments/{comment}/publish', [CommentsController::class, 'publish'])->name('comments.publish');
-Route::post('{article}/grades', [GradesController::class, 'store'])->name('grades.store');
-Route::get('profile/{user}', [ProfileController::class, 'show'])
-    ->middleware('auth')
-    ->name('profile.show');
+Route::middleware('auth')->group(function () {
+    Route::get('/', [HomeController::class, 'index'])->name('home');
+    Route::get('news/create', [NewsController::class, 'create'])->name('news.create');
+    Route::get('news/{article}', [NewsController::class, 'show'])->name('news.show');
+    Route::post('news/store', [NewsController::class, 'store'])->name('news.store');
+    Route::post('news/{article}/publish', [NewsController::class, 'publish'])->name('news.publish');
+    Route::post('{article}/comments/store', [CommentsController::class, 'store'])->name('comments.store');
+    Route::post('comments/{comment}/publish', [CommentsController::class, 'publish'])->name('comments.publish');
+    Route::post('{article}/grades', [GradesController::class, 'store'])->name('grades.store');
+    Route::get('profile/{user}', [ProfileController::class, 'show'])->name('profile.show');
+});
