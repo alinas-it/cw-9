@@ -1,5 +1,10 @@
 <?php
 
+use App\Http\Controllers\CommentsController;
+use App\Http\Controllers\GradesController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\NewsController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,10 +18,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
 
 Auth::routes();
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('news/create', [NewsController::class, 'create'])->name('news.create');
+Route::get('news/{article}', [NewsController::class, 'show'])->name('news.show');
+Route::post('news/store', [NewsController::class, 'store'])->name('news.store');
+Route::post('{article}/comments/store', [CommentsController::class, 'store'])->name('comments.store');
+Route::post('{article}/grades', [GradesController::class, 'store'])->name('grades.store');
